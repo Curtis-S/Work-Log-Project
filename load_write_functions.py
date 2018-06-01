@@ -15,20 +15,18 @@ class File_Reader:
 class FileWriter:
 
     def write_entry_first_time(self, task, time_spent, notes, date):
-        real_date = datetime.strftime("%d/%m/%y")
-
+        real_date = datetime.datetime.strptime(date, "%d/%m/%Y")
         with open('work_log.csv', 'a+', newline='') as csvfile:
-            real_date = datetime.datetime.strptime(date, "%d/%m/%Y")
-            with open('work_log.csv', 'a', newline='') as csvfile:
-                fieldnames = ['task', 'time_spent', 'notes', 'date']
-                writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
-                writer.writerow(
-                    {'task': task, 'time_spent': time_spent, 'notes': notes,
-                     'date': real_date.strftime("%d/%m/%Y")})
+            fieldnames = ['task', 'time_spent', 'notes', 'date']
+            writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+            writer.writeheader()
+            writer.writerow(
+                {'task': task, 'time_spent': time_spent, 'notes': notes,
+                 'date': real_date.strftime("%d/%m/%Y")})
 
     def write_entry_append(self, task, time_spent, notes, date):
         real_date = datetime.datetime.strptime(date, "%d/%m/%Y")
-        with open('work_log.csv', 'a', newline='') as csvfile:
+        with open('work_log.csv', 'a+', newline='') as csvfile:
             fieldnames = ['task', 'time_spent', 'notes', 'date']
             writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
             writer.writerow(
