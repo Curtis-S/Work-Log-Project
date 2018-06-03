@@ -1,9 +1,21 @@
 import csv
 import datetime
 import re
+import os
+from pathlib import Path
 
 
 class File_Reader:
+    file_path = Path(os.getcwd() + "/work_log.csv")
+
+    def __init__(self):
+        if self.file_path.exists():
+            pass
+        else:
+            with open('work_log.csv', 'a+', newline='') as csvfile:
+                fieldnames = ['task', 'time_spent', 'notes', 'date']
+                writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+                writer.writeheader()
 
     def load_csv_file(self):
         with open('work_log.csv', newline='') as csvfile:
@@ -13,25 +25,29 @@ class File_Reader:
 
 
 class FileWriter:
+    file_path = Path(os.getcwd() + "/work_log.csv")
 
-    def write_entry_first_time(self, task, time_spent, notes, date):
-        real_date = datetime.datetime.strptime(date, "%d/%m/%Y")
-        with open('work_log.csv', 'a+', newline='') as csvfile:
-            fieldnames = ['task', 'time_spent', 'notes', 'date']
-            writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
-            writer.writeheader()
-            writer.writerow(
-                {'task': task, 'time_spent': time_spent, 'notes': notes,
-                 'date': real_date.strftime("%d/%m/%Y")})
+    def __init__(self):
+        if self.file_path.exists():
+            pass
+        else:
+            with open('work_log.csv', 'a+', newline='') as csvfile:
+                fieldnames = ['task', 'time_spent', 'notes', 'date']
+                writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+                writer.writeheader()
 
     def write_entry_append(self, task, time_spent, notes, date):
         real_date = datetime.datetime.strptime(date, "%d/%m/%Y")
-        with open('work_log.csv', 'a+', newline='') as csvfile:
-            fieldnames = ['task', 'time_spent', 'notes', 'date']
-            writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
-            writer.writerow(
-                {'task': task, 'time_spent': time_spent, 'notes': notes,
-                 'date': real_date.strftime("%d/%m/%Y")})
+        validation_pattern = re.compile("[a-zA-Z0-9_.-]+")
+        if validation_pattern.search(notes) is None or notes is None:
+            raise ValueError(' notes cannot be empty')
+        else:
+            with open('work_log.csv', 'a+', newline='') as csvfile:
+                fieldnames = ['task', 'time_spent', 'notes', 'date']
+                writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+                writer.writerow(
+                    {'task': task, 'time_spent': time_spent, 'notes': notes,
+                     'date': real_date.strftime("%d/%m/%Y")})
 
 
 class DataSearch:
@@ -75,7 +91,7 @@ class DataSearch:
         for entries in data:
             if search_pattern.search(
                     entries.get("task")) or search_pattern.search(
-                    entries.get("notes")) is not None:
+                entries.get("notes")) is not None:
                 return_list.append(entries)
             else:
                 pass
